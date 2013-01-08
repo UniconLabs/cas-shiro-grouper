@@ -1,0 +1,53 @@
+apply plugin: 'idea'
+apply plugin: 'war'
+defaultTasks 'clean', 'build'
+
+group = 'net.unicon'
+sourceCompatibility = 1.6
+version = '1.0'
+
+repositories {
+	mavenCentral()
+	mavenRepo name: "Spring Release", url: "http://maven.springframework.org/release"
+    mavenRepo name: "Apache Development Snapshot Repository", url: "https://repository.apache.org/content/repositories/snapshots"
+}
+
+def shiroVersion = '1.3.0-SNAPSHOT'
+def slf4jVersion = '1.6.6'
+def commonsCodecVersion = '1.4'
+def openSamlVersion = '1.1'
+def xmlcesVersion = '1.4.3'
+def grouperVersion = '2.1.0'
+
+dependencies {
+
+    //Logging
+    compile group: 'org.slf4j', name: 'slf4j-log4j12', version: slf4jVersion
+    compile group: 'org.slf4j', name: 'jcl-over-slf4j', version: slf4jVersion
+
+	//Shiro
+    compile group: 'org.apache.shiro', name: 'shiro-core', version: shiroVersion
+    runtime group: 'org.apache.shiro', name: 'shiro-web', version: shiroVersion
+    runtime group: 'org.apache.shiro', name: 'shiro-cas', version: shiroVersion
+
+    //Grouper
+    compile group: 'edu.internet2.middleware.grouper', name: 'grouperClient', version: grouperVersion
+
+	//Misc runtime support
+    runtime group: 'commons-codec', name: 'commons-codec', version: commonsCodecVersion
+    runtime group: 'org.opensaml', name: 'opensaml', version: openSamlVersion
+    runtime group: 'org.apache.santuario', name: 'xmlsec', version: xmlcesVersion
+}
+
+war {
+	archiveName = 'shiro-app.war'
+}
+
+//Just a helper to produce an exploded war, should one choose to use it
+war.doLast {
+    ant.unzip(src: war.archivePath, dest: "$buildDir/shiro-app")
+}
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '1.1'
+}
